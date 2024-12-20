@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poop Clicker</title>
+  <style>
+    /* Basic styles for the game */
+    body {
+      background-color: #7f5d3d; /* Brown background */
+      font-family: 'Comic Sans MS', sans-serif; /* Cartoonish font */
+      color: white;
+      text-align: center;
+      margin-top: 50px;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 4em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    #poop {
+      cursor: pointer;
+      font-size: 6em;
+      margin: 20px;
+      transition: transform 0.1s;
+    }
+
+    #poop:active {
+      transform: scale(1.1); /* Slightly enlarge the poop when clicked */
+    }
+
+    #poop-count {
+      font-size: 2em;
+      margin-top: 20px;
+    }
+
+    .upgrade-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 80%;
+      margin-top: 40px;
+    }
+
+    .upgrade-button {
+      font-size: 1.5em;
+      padding: 15px;
+      background-color: #d7a15f;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      text-align: center;
+    }
+
+    .upgrade-button:hover {
+      background-color: #b47a44;
+      transform: scale(1.05);
+    }
+
+    .upgrade-button:disabled {
+      background-color: #b2b2b2;
+      cursor: not-allowed;
+    }
+
+    .upgrade-image {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 10px;
+    }
+
+    #upgrade-info {
+      font-size: 1.2em;
+      margin-top: 30px;
+    }
+
+    /* Center the game vertically */
+    .game-container {
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Poop Clicker</h1>
+    <div id="poop" onclick="addPoop()">💩</div>
+    <div id="poop-count">Poop: 0</div>
+
+    <!-- Upgrade Buttons -->
+    <div class="upgrade-container">
+      <button class="upgrade-button" id="upgrade1" onclick="buyUpgrade(1)" disabled>
+        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Plunger_icon.svg" alt="Plunger">
+        Upgrade Poop Clicker (Cost: 10 Poop)
+      </button>
+      <button class="upgrade-button" id="upgrade2" onclick="buyUpgrade(2)" disabled>
+        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Toilet_icon.svg" alt="Toilet">
+        Hire Plumber (Cost: 100 Poop)
+      </button>
+      <button class="upgrade-button" id="upgrade3" onclick="buyUpgrade(3)" disabled>
+        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Gold_Icon.svg" alt="Gold">
+        Super Poop Generator (Cost: 1000 Poop)
+      </button>
+      <button class="upgrade-button" id="upgrade4" onclick="buyUpgrade(4)" disabled>
+        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Factory_icon.svg" alt="Factory">
+        Poop Factory (Cost: 5000 Poop)
+      </button>
+      <button class="upgrade-button" id="upgrade5" onclick="buyUpgrade(5)" disabled>
+        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/4/46/Toilet_paper_icon.svg" alt="Golden Toilet">
+        Golden Toilet (Cost: 20000 Poop)
+      </button>
+    </div>
+
+    <div id="upgrade-info"></div>
+  </div>
+
+  <!-- Sound Effects -->
+  <audio id="fart-sound">
+    <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
+  </audio>
+  <audio id="upgrade-sound">
+    <source src="https://www.soundjay.com/button/beep-08b.wav" type="audio/wav">
+  </audio>
+  <audio id="unlock-sound">
+    <source src="https://www.soundjay.com/button/beep-09.wav" type="audio/wav">
+  </audio>
+  <audio id="click-sound">
+    <source src="https://www.soundjay.com/button/beep-10.wav" type="audio/wav">
+  </audio>
+
+  <script>
+    // Poop counter and upgrade cost
+    let poopCount = 0;
+    let poopPerClick = 1;
+    let upgrades = [10, 100, 1000, 5000, 20000]; // Initial upgrade costs
+    let upgradeLevels = [0, 0, 0, 0, 0]; // Number of upgrades bought for each level
+
+    // Update the poop count on the screen
+    function updatePoopCount() {
+      document.getElementById('poop-count').textContent = `Poop: ${poopCount}`;
+      checkUpgradeAvailability(); // Check if upgrades are affordable
+    }
+
+    // Add poop when the player clicks the poop
+    function addPoop() {
+      poopCount += poopPerClick;
+      updatePoopCount();
+      playClickSound(); // Play click sound
+    }
+
+    // Play fart sound on poop click
+    function playClickSound() {
+      const fartSound = document.getElementById('click-sound');
+      fartSound.play();
+    }
+
+    // Function to check if upgrades are available based on poop count
+    function checkUpgradeAvailability() {
+      upgrades.forEach((cost, index) => {
+        if (poopCount >= cost) {
+          document.getElementById(`upgrade${index + 1}`).disabled = false; // Enable button
+        } else {
+          document.getElementById(`upgrade${index + 1}`).disabled = true; // Disable button
+        }
+      });
+    }
+
+    // Function to handle upgrades
+    function buyUpgrade(upgradeIndex) {
+      if (poopCount >= upgrades[upgradeIndex - 1]) {
+        poopCount -= upgrades[upgradeIndex - 1];
+        upgradeLevels[upgradeIndex - 1] += 1;
+        upgrades[upgradeIndex - 1] *= 2; // Double the cost of next upgrade
+        poopPerClick *= 2; // Double the poop per click
+        updatePoopCount();
+        playUpgradeSound();
+        updateUpgradeInfo(upgradeIndex);
+      } else {
+        alert("Not enough poop! Keep clicking to collect more.");
+      }
+    }
+
+    // Play sound when upgrade is purchased
+    function playUpgradeSound() {
+      const upgradeSound = document.getElementById('upgrade-sound');
+      upgradeSound.play();
+    }
+
+    // Display upgrade information on screen
+    function updateUpgradeInfo(upgradeIndex) {
+      const upgradeInfo = document.getElementById('upgrade-info');
+      let infoText = '';
+
+      if (upgradeLevels[0] > 0) {
+        infoText += `Poop Clicker Upgrade Level: ${upgradeLevels[0]} (Poop per click: ${poopPerClick})<br>`;
+      }
+      if (upgradeLevels[1] > 0) {
+        infoText += `Plumber Hired: Level ${upgradeLevels[1]} (Increases poop collection speed)<br>`;
+      }
+      if (upgradeLevels[2] > 0) {
+        infoText += `Super Poop Generator Activated: Level ${upgradeLevels[2]}<br>`;
+      }
+      if (upgradeLevels[3] > 0) {
+        infoText += `Poop Factory Activated: Level ${upgradeLevels[3]}<br>`;
+      }
+      if (upgradeLevels[4] > 0) {
+        infoText += `Golden Toilet Upgraded: Level ${upgradeLevels[4]}<br>`;
+      }
+
+      upgradeInfo.innerHTML = infoText;
+    }
+
+    // Sound effect for unlocking upgrades
+    function playUnlockSound() {
+      const unlockSound = document.getElementById('unlock-sound');
+      unlockSound.play();
+    }
+
+    // Initialize game
+    window.onload = function() {
+      updatePoopCount();
+      playUnlockSound();
+    };
+  </script>
+</body>
+</html>
