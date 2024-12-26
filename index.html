@@ -87,6 +87,23 @@
       text-align: center;
     }
 
+    /* Mute button */
+    #mute-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #d7a15f;
+      color: white;
+      border: none;
+      font-size: 1.5em;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    #mute-button:hover {
+      background-color: #b47a44;
+      transform: scale(1.05);
+    }
+
   </style>
 </head>
 <body>
@@ -120,6 +137,7 @@
     </div>
 
     <div id="upgrade-info"></div>
+    <button id="mute-button" onclick="toggleMute()">Mute Music</button>
   </div>
 
   <!-- Sound Effects -->
@@ -136,12 +154,20 @@
     <source src="https://www.soundjay.com/button/beep-10.wav" type="audio/wav">
   </audio>
 
+  <!-- Background Music -->
+  <audio id="background-music" loop>
+    <source src="https://www.soundjay.com/button/beep-06.wav" type="audio/wav">
+  </audio>
+
   <script>
     // Poop counter and upgrade cost
     let poopCount = 0;
     let poopPerClick = 1;
     let upgrades = [10, 100, 1000, 5000, 20000]; // Initial upgrade costs
     let upgradeLevels = [0, 0, 0, 0, 0]; // Number of upgrades bought for each level
+    let workers = 0; // Number of workers
+    let workerCost = 500; // Cost for each worker
+    let musicMuted = false;
 
     // Update the poop count on the screen
     function updatePoopCount() {
@@ -179,7 +205,7 @@
         poopCount -= upgrades[upgradeIndex - 1];
         upgradeLevels[upgradeIndex - 1] += 1;
         upgrades[upgradeIndex - 1] *= 2; // Double the cost of next upgrade
-        poopPerClick *= 2; // Double the poop per click
+        poopPerClick *= 1.5; // Slightly increase the poop per click
         updatePoopCount();
         playUpgradeSound();
         updateUpgradeInfo(upgradeIndex);
@@ -218,16 +244,41 @@
       upgradeInfo.innerHTML = infoText;
     }
 
-    // Sound effect for unlocking upgrades
-    function playUnlockSound() {
-      const unlockSound = document.getElementById('unlock-sound');
-      unlockSound.play();
+    // Hire worker function
+    function hireWorker() {
+      if (poopCount >= workerCost) {
+        poopCount -= workerCost;
+        workers += 1; // Add one worker
+        workerCost = Math.floor(workerCost * 1.5); // Increase the cost of next worker
+        updatePoopCount();
+        alert(`You hired a worker! They will collect poop every second.`);
+      } else {
+        alert("Not enough poop to hire a worker! Keep clicking.");
+      }
     }
+
+    // Add worker system: Workers collect poop every second
+    function collectPoopAutomatically() {
+      poopCount += workers; // Number of workers collect poop
+      updatePoopCount();
+    }
+
+    // Mute/unmute music function
+    function toggleMute() {
+      const music = document.getElementById('background-music');
+      const muteButton = document.getElementById('mute-button');
+      musicMuted = !musicMuted;
+      music.muted = musicMuted;
+      muteButton.textContent = musicMuted ? "Unmute Music" : "Mute Music";
+    }
+
+    // Start background music on load
+    document.getElementById('background-music').play();
 
     // Initialize game
     window.onload = function() {
       updatePoopCount();
-      playUnlockSound();
+      setInterval(collectPoopAutomatically, 1000); // Collect every second
     };
   </script>
 </body>
