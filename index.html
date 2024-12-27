@@ -92,7 +92,6 @@
             text-align: center;
         }
 
-        /* Cartoony button text */
         .cartoony-btn {
             font-family: 'Luckiest Guy', cursive, sans-serif;
             font-size: 18px;
@@ -164,6 +163,31 @@
                 opacity: 0;
             }
         }
+
+        /* Glowing Poop Emoji */
+        #glowing-poop {
+            font-size: 100px;
+            position: absolute;
+            top: -100px;
+            color: #ff9900;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            display: none; /* Initially hidden */
+        }
+
+        /* Message that pops up on 2x click */
+        #multiplier-msg {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            font-weight: bold;
+            color: #ffcc00;
+            text-shadow: 2px 2px 10px #000;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
@@ -203,6 +227,8 @@
         </div>
 
         <div id="poop-rain"></div>
+        <div id="multiplier-msg">2x Multiplier Activated!</div>
+        <div id="glowing-poop">💩</div>
     </div>
 
     <script>
@@ -212,6 +238,7 @@
         let worker1Cost = 50, worker2Cost = 150, worker3Cost = 500, worker4Cost = 1500;
         let worker1Count = 0, worker2Count = 0, worker3Count = 0, worker4Count = 0;
         let poopPerWorker1 = 1, poopPerWorker2 = 5, poopPerWorker3 = 20, poopPerWorker4 = 50;
+        let multiplierActive = false;
 
         // DOM Elements
         const poopDisplay = document.getElementById('poop-amount');
@@ -222,22 +249,24 @@
         const buyWorker3Btn = document.getElementById('buy-worker-3');
         const buyWorker4Btn = document.getElementById('buy-worker-4');
         const poopRain = document.getElementById('poop-rain');
+        const glowingPoop = document.getElementById('glowing-poop');
+        const multiplierMsg = document.getElementById('multiplier-msg');
 
         // Functions
         function updatePoopDisplay() {
             poopDisplay.textContent = poopAmount;
         }
 
-        function rainPoop() {
-            const poopDrop = document.createElement('span');
-            poopDrop.textContent = '💩';
-            poopDrop.style.position = 'absolute';
-            poopDrop.style.left = `${Math.random() * 100}%`;
-            poopDrop.style.animation = 'fall 3s linear infinite';
-            poopRain.appendChild(poopDrop);
+        function generateClickFeedback() {
+            const feedback = document.createElement('div');
+            feedback.textContent = `+${poopPerClick}💩`;
+            feedback.classList.add('click-feedback-pop');
+            feedback.style.left = `${Math.random() * 100}%`;
+            feedback.style.top = `${Math.random() * 100}%`;
+            document.body.appendChild(feedback);
             setTimeout(() => {
-                poopDrop.remove();
-            }, 3000);
+                feedback.remove();
+            }, 800);
         }
 
         function buyWorker(workerType) {
@@ -268,18 +297,6 @@
             }
         }
 
-        function generateClickFeedback() {
-            const feedback = document.createElement('div');
-            feedback.textContent = `+${poopPerClick}💩`;
-            feedback.classList.add('click-feedback-pop');
-            feedback.style.left = `${Math.random() * 100}%`;
-            feedback.style.top = `${Math.random() * 100}%`;
-            document.body.appendChild(feedback);
-            setTimeout(() => {
-                feedback.remove();
-            }, 800);
-        }
-
         function gameLoop() {
             poopAmount += (worker1Count * poopPerWorker1) + (worker2Count * poopPerWorker2) + (worker3Count * poopPerWorker3) + (worker4Count * poopPerWorker4);
             updatePoopDisplay();
@@ -298,12 +315,25 @@
             }
         }
 
-        // Event Listeners
+        // Handle 2x multiplier
+        glowingPoop.addEventListener('click', () => {
+            if (!multiplierActive) {
+                multiplierActive = true;
+                poopPerClick *= 2; // Activate multiplier
+                multiplierMsg.style.display = 'block'; // Show multiplier message
+                setTimeout(() => {
+                    multiplierMsg.style.display = 'none'; // Hide multiplier message after 3 seconds
+                    multiplierActive = false;
+                    poopPerClick /= 2; // Reset multiplier
+                }, 3000);
+            }
+        });
+
+        // Game event listeners
         poopBtn.addEventListener('click', () => {
             poopAmount += poopPerClick;
             generateClickFeedback();
             updatePoopDisplay();
-            rainPoop();
         });
 
         buyWorker1Btn.addEventListener('click', () => buyWorker(1));
@@ -311,10 +341,21 @@
         buyWorker3Btn.addEventListener('click', () => buyWorker(3));
         buyWorker4Btn.addEventListener('click', () => buyWorker(4));
 
-        // Set intervals
-        setInterval(gameLoop, 1000);
-        setInterval(rainPoop, 500);
-        updatePoopDisplay();
+        // Randomly position the glowing poop every 3 minutes
+        setInterval(() => {
+            glowingPoop.style.left = `${Math.random() * 100}%`; // Random horizontal position
+            glowingPoop.style.top = `-100px`; // Reset to start falling from the top
+            glowingPoop.style.animation = 'fall 2.5s linear'; // Trigger fall animation
+            glowingPoop.style.display = 'block'; // Show the glowing poop emoji
+
+            // Remove the glowing poop after the animation is done
+            setTimeout(() => {
+                glowingPoop.style.display = 'none'; // Hide glowing poop after falling
+            }, 2500); // 2.5 seconds for fall animation
+        }, 180000); // 180,000ms = 3 minutes
+
+        // Update game loop every second
+        setInterval(gameLoop, 1000); // Update poop amount every second
     </script>
 </body>
 </html>
