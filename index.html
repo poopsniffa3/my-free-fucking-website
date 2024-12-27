@@ -1,285 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Poop Clicker</title>
-  <style>
-    /* Basic styles for the game */
-    body {
-      background-color: #7f5d3d; /* Brown background */
-      font-family: 'Comic Sans MS', sans-serif; /* Cartoonish font */
-      color: white;
-      text-align: center;
-      margin-top: 50px;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poop Clicker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #7A4B3A; /* Brown background */
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
 
-    h1 {
-      font-size: 4em;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-    }
+        #game-container {
+            position: relative;
+            padding-top: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
 
-    #poop {
-      cursor: pointer;
-      font-size: 6em;
-      margin: 20px;
-      transition: transform 0.1s;
-    }
+        #left-container {
+            flex-grow: 1;
+            text-align: center;
+        }
 
-    #poop:active {
-      transform: scale(1.1); /* Slightly enlarge the poop when clicked */
-    }
+        #right-container {
+            position: absolute;
+            right: 20px;
+            top: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            z-index: 1;
+        }
 
-    #poop-count {
-      font-size: 2em;
-      margin-top: 20px;
-    }
+        h1 {
+            font-size: 50px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px #000;
+        }
 
-    .upgrade-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      width: 80%;
-      margin-top: 40px;
-    }
+        #poop-display {
+            font-size: 30px;
+            margin: 20px;
+        }
 
-    .upgrade-button {
-      font-size: 1.5em;
-      padding: 15px;
-      background-color: #d7a15f;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      text-align: center;
-    }
+        #click-feedback {
+            font-size: 30px;
+            color: #ffcc00;
+            font-weight: bold;
+            margin-top: 10px;
+        }
 
-    .upgrade-button:hover {
-      background-color: #b47a44;
-      transform: scale(1.05);
-    }
+        #poop-btn-container {
+            margin: 20px;
+        }
 
-    .upgrade-button:disabled {
-      background-color: #b2b2b2;
-      cursor: not-allowed;
-    }
+        #poop-btn {
+            font-size: 60px;
+            padding: 30px;
+            background: #b07456;
+            border: 5px solid #8e5b43;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
 
-    .upgrade-image {
-      width: 100px;
-      height: 100px;
-      margin-bottom: 10px;
-    }
+        #poop-btn:hover {
+            background: #8e5b43;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
+        }
 
-    #upgrade-info {
-      font-size: 1.2em;
-      margin-top: 30px;
-    }
+        #upgrades-container {
+            margin-top: 30px;
+        }
 
-    /* Center the game vertically */
-    .game-container {
-      text-align: center;
-    }
+        .worker-upgrade {
+            margin-top: 15px;
+            font-size: 20px;
+            background: #996633;
+            padding: 15px;
+            border-radius: 5px;
+            border: 2px solid #cc9933;
+            width: 250px;
+            text-align: center;
+        }
 
-    /* Mute button */
-    #mute-button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #d7a15f;
-      color: white;
-      border: none;
-      font-size: 1.5em;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+        /* Cartoony button text */
+        .cartoony-btn {
+            font-family: 'Luckiest Guy', cursive, sans-serif;
+            font-size: 18px;
+            padding: 10px 20px;
+            background-color: #ffcc00;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
 
-    #mute-button:hover {
-      background-color: #b47a44;
-      transform: scale(1.05);
-    }
+        .cartoony-btn:hover {
+            background-color: #ffaa00;
+            transform: scale(1.1);
+        }
 
-  </style>
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .owned-btn {
+            background-color: #666;
+            cursor: not-allowed;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #poop-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .click-feedback-pop {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: popEffect 0.8s ease-out forwards;
+        }
+
+        @keyframes popEffect {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="game-container">
-    <h1>Poop Clicker</h1>
-    <div id="poop" onclick="addPoop()">💩</div>
-    <div id="poop-count">Poop: 0</div>
+    <div id="game-container">
+        <div id="left-container">
+            <h1>Poop Clicker</h1>
+            <div id="poop-display">
+                <span id="poop-amount">0</span> Poop Points
+            </div>
+            <div id="click-feedback"></div>
 
-    <!-- Upgrade Buttons -->
-    <div class="upgrade-container">
-      <button class="upgrade-button" id="upgrade1" onclick="buyUpgrade(1)" disabled>
-        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/4/4f/Plunger_icon.svg" alt="Plunger">
-        Upgrade Poop Clicker (Cost: 10 Poop)
-      </button>
-      <button class="upgrade-button" id="upgrade2" onclick="buyUpgrade(2)" disabled>
-        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Toilet_icon.svg" alt="Toilet">
-        Hire Plumber (Cost: 100 Poop)
-      </button>
-      <button class="upgrade-button" id="upgrade3" onclick="buyUpgrade(3)" disabled>
-        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Gold_Icon.svg" alt="Gold">
-        Super Poop Generator (Cost: 1000 Poop)
-      </button>
-      <button class="upgrade-button" id="upgrade4" onclick="buyUpgrade(4)" disabled>
-        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Factory_icon.svg" alt="Factory">
-        Poop Factory (Cost: 5000 Poop)
-      </button>
-      <button class="upgrade-button" id="upgrade5" onclick="buyUpgrade(5)" disabled>
-        <img class="upgrade-image" src="https://upload.wikimedia.org/wikipedia/commons/4/46/Toilet_paper_icon.svg" alt="Golden Toilet">
-        Golden Toilet (Cost: 20000 Poop)
-      </button>
+            <div id="poop-btn-container">
+                <button id="poop-btn">💩</button>
+            </div>
+        </div>
+
+        <div id="right-container">
+            <div id="upgrades-container">
+                <h2>Hire Workers</h2>
+                <div class="worker-upgrade" id="worker-1">
+                    <button id="buy-worker-1" class="cartoony-btn">Buy Toilet Cleaner (Cost: 50 Poop)</button>
+                    <p>Generates 1 poop per second</p>
+                </div>
+                <div class="worker-upgrade" id="worker-2">
+                    <button id="buy-worker-2" class="cartoony-btn" disabled>Buy Poop Collector (Cost: 150 Poop)</button>
+                    <p>Generates 5 poop per second</p>
+                </div>
+                <div class="worker-upgrade" id="worker-3">
+                    <button id="buy-worker-3" class="cartoony-btn" disabled>Buy Poop Engineer (Cost: 500 Poop)</button>
+                    <p>Generates 20 poop per second</p>
+                </div>
+                <div class="worker-upgrade" id="worker-4">
+                    <button id="buy-worker-4" class="cartoony-btn" disabled>Buy Poop Specialist (Cost: 1500 Poop)</button>
+                    <p>Generates 50 poop per second</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="poop-rain"></div>
     </div>
 
-    <div id="upgrade-info"></div>
-    <button id="mute-button" onclick="toggleMute()">Mute Music</button>
-  </div>
+    <script>
+        // Initialize game variables
+        let poopAmount = 0;
+        let poopPerClick = 1;
+        let worker1Cost = 50, worker2Cost = 150, worker3Cost = 500, worker4Cost = 1500;
+        let worker1Count = 0, worker2Count = 0, worker3Count = 0, worker4Count = 0;
+        let poopPerWorker1 = 1, poopPerWorker2 = 5, poopPerWorker3 = 20, poopPerWorker4 = 50;
 
-  <!-- Sound Effects -->
-  <audio id="fart-sound">
-    <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
-  </audio>
-  <audio id="upgrade-sound">
-    <source src="https://www.soundjay.com/button/beep-08b.wav" type="audio/wav">
-  </audio>
-  <audio id="unlock-sound">
-    <source src="https://www.soundjay.com/button/beep-09.wav" type="audio/wav">
-  </audio>
-  <audio id="click-sound">
-    <source src="https://www.soundjay.com/button/beep-10.wav" type="audio/wav">
-  </audio>
+        // DOM Elements
+        const poopDisplay = document.getElementById('poop-amount');
+        const clickFeedback = document.getElementById('click-feedback');
+        const poopBtn = document.getElementById('poop-btn');
+        const buyWorker1Btn = document.getElementById('buy-worker-1');
+        const buyWorker2Btn = document.getElementById('buy-worker-2');
+        const buyWorker3Btn = document.getElementById('buy-worker-3');
+        const buyWorker4Btn = document.getElementById('buy-worker-4');
+        const poopRain = document.getElementById('poop-rain');
 
-  <!-- Background Music -->
-  <audio id="background-music" loop>
-    <source src="https://www.soundjay.com/button/beep-06.wav" type="audio/wav">
-  </audio>
-
-  <script>
-    // Poop counter and upgrade cost
-    let poopCount = 0;
-    let poopPerClick = 1;
-    let upgrades = [10, 100, 1000, 5000, 20000]; // Initial upgrade costs
-    let upgradeLevels = [0, 0, 0, 0, 0]; // Number of upgrades bought for each level
-    let workers = 0; // Number of workers
-    let workerCost = 500; // Cost for each worker
-    let musicMuted = false;
-
-    // Update the poop count on the screen
-    function updatePoopCount() {
-      document.getElementById('poop-count').textContent = `Poop: ${poopCount}`;
-      checkUpgradeAvailability(); // Check if upgrades are affordable
-    }
-
-    // Add poop when the player clicks the poop
-    function addPoop() {
-      poopCount += poopPerClick;
-      updatePoopCount();
-      playClickSound(); // Play click sound
-    }
-
-    // Play fart sound on poop click
-    function playClickSound() {
-      const fartSound = document.getElementById('click-sound');
-      fartSound.play();
-    }
-
-    // Function to check if upgrades are available based on poop count
-    function checkUpgradeAvailability() {
-      upgrades.forEach((cost, index) => {
-        if (poopCount >= cost) {
-          document.getElementById(`upgrade${index + 1}`).disabled = false; // Enable button
-        } else {
-          document.getElementById(`upgrade${index + 1}`).disabled = true; // Disable button
+        // Functions
+        function updatePoopDisplay() {
+            poopDisplay.textContent = poopAmount;
         }
-      });
-    }
 
-    // Function to handle upgrades
-    function buyUpgrade(upgradeIndex) {
-      if (poopCount >= upgrades[upgradeIndex - 1]) {
-        poopCount -= upgrades[upgradeIndex - 1];
-        upgradeLevels[upgradeIndex - 1] += 1;
-        upgrades[upgradeIndex - 1] *= 2; // Double the cost of next upgrade
-        poopPerClick *= 1.5; // Slightly increase the poop per click
-        updatePoopCount();
-        playUpgradeSound();
-        updateUpgradeInfo(upgradeIndex);
-      } else {
-        alert("Not enough poop! Keep clicking to collect more.");
-      }
-    }
+        function rainPoop() {
+            const poopDrop = document.createElement('span');
+            poopDrop.textContent = '💩';
+            poopDrop.style.position = 'absolute';
+            poopDrop.style.left = `${Math.random() * 100}%`;
+            poopDrop.style.animation = 'fall 3s linear infinite';
+            poopRain.appendChild(poopDrop);
+            setTimeout(() => {
+                poopDrop.remove();
+            }, 3000);
+        }
 
-    // Play sound when upgrade is purchased
-    function playUpgradeSound() {
-      const upgradeSound = document.getElementById('upgrade-sound');
-      upgradeSound.play();
-    }
+        function buyWorker(workerType) {
+            if (workerType === 1 && poopAmount >= worker1Cost && worker1Count === 0) {
+                poopAmount -= worker1Cost;
+                worker1Count++;
+                buyWorker1Btn.textContent = "Owned";
+                buyWorker1Btn.classList.add("owned-btn");
+                buyWorker1Btn.disabled = true;
+            } else if (workerType === 2 && poopAmount >= worker2Cost && worker2Count === 0) {
+                poopAmount -= worker2Cost;
+                worker2Count++;
+                buyWorker2Btn.textContent = "Owned";
+                buyWorker2Btn.classList.add("owned-btn");
+                buyWorker2Btn.disabled = true;
+            } else if (workerType === 3 && poopAmount >= worker3Cost && worker3Count === 0) {
+                poopAmount -= worker3Cost;
+                worker3Count++;
+                buyWorker3Btn.textContent = "Owned";
+                buyWorker3Btn.classList.add("owned-btn");
+                buyWorker3Btn.disabled = true;
+            } else if (workerType === 4 && poopAmount >= worker4Cost && worker4Count === 0) {
+                poopAmount -= worker4Cost;
+                worker4Count++;
+                buyWorker4Btn.textContent = "Owned";
+                buyWorker4Btn.classList.add("owned-btn");
+                buyWorker4Btn.disabled = true;
+            }
+        }
 
-    // Display upgrade information on screen
-    function updateUpgradeInfo(upgradeIndex) {
-      const upgradeInfo = document.getElementById('upgrade-info');
-      let infoText = '';
+        function generateClickFeedback() {
+            const feedback = document.createElement('div');
+            feedback.textContent = `+${poopPerClick}💩`;
+            feedback.classList.add('click-feedback-pop');
+            feedback.style.left = `${Math.random() * 100}%`;
+            feedback.style.top = `${Math.random() * 100}%`;
+            document.body.appendChild(feedback);
+            setTimeout(() => {
+                feedback.remove();
+            }, 800);
+        }
 
-      if (upgradeLevels[0] > 0) {
-        infoText += `Poop Clicker Upgrade Level: ${upgradeLevels[0]} (Poop per click: ${poopPerClick})<br>`;
-      }
-      if (upgradeLevels[1] > 0) {
-        infoText += `Plumber Hired: Level ${upgradeLevels[1]} (Increases poop collection speed)<br>`;
-      }
-      if (upgradeLevels[2] > 0) {
-        infoText += `Super Poop Generator Activated: Level ${upgradeLevels[2]}<br>`;
-      }
-      if (upgradeLevels[3] > 0) {
-        infoText += `Poop Factory Activated: Level ${upgradeLevels[3]}<br>`;
-      }
-      if (upgradeLevels[4] > 0) {
-        infoText += `Golden Toilet Upgraded: Level ${upgradeLevels[4]}<br>`;
-      }
+        function gameLoop() {
+            poopAmount += (worker1Count * poopPerWorker1) + (worker2Count * poopPerWorker2) + (worker3Count * poopPerWorker3) + (worker4Count * poopPerWorker4);
+            updatePoopDisplay();
 
-      upgradeInfo.innerHTML = infoText;
-    }
+            if (poopAmount >= worker1Cost) {
+                buyWorker1Btn.disabled = false;
+            }
+            if (poopAmount >= worker2Cost) {
+                buyWorker2Btn.disabled = false;
+            }
+            if (poopAmount >= worker3Cost) {
+                buyWorker3Btn.disabled = false;
+            }
+            if (poopAmount >= worker4Cost) {
+                buyWorker4Btn.disabled = false;
+            }
+        }
 
-    // Hire worker function
-    function hireWorker() {
-      if (poopCount >= workerCost) {
-        poopCount -= workerCost;
-        workers += 1; // Add one worker
-        workerCost = Math.floor(workerCost * 1.5); // Increase the cost of next worker
-        updatePoopCount();
-        alert(`You hired a worker! They will collect poop every second.`);
-      } else {
-        alert("Not enough poop to hire a worker! Keep clicking.");
-      }
-    }
+        // Event Listeners
+        poopBtn.addEventListener('click', () => {
+            poopAmount += poopPerClick;
+            generateClickFeedback();
+            updatePoopDisplay();
+            rainPoop();
+        });
 
-    // Add worker system: Workers collect poop every second
-    function collectPoopAutomatically() {
-      poopCount += workers; // Number of workers collect poop
-      updatePoopCount();
-    }
+        buyWorker1Btn.addEventListener('click', () => buyWorker(1));
+        buyWorker2Btn.addEventListener('click', () => buyWorker(2));
+        buyWorker3Btn.addEventListener('click', () => buyWorker(3));
+        buyWorker4Btn.addEventListener('click', () => buyWorker(4));
 
-    // Mute/unmute music function
-    function toggleMute() {
-      const music = document.getElementById('background-music');
-      const muteButton = document.getElementById('mute-button');
-      musicMuted = !musicMuted;
-      music.muted = musicMuted;
-      muteButton.textContent = musicMuted ? "Unmute Music" : "Mute Music";
-    }
-
-    // Start background music on load
-    document.getElementById('background-music').play();
-
-    // Initialize game
-    window.onload = function() {
-      updatePoopCount();
-      setInterval(collectPoopAutomatically, 1000); // Collect every second
-    };
-  </script>
+        // Set intervals
+        setInterval(gameLoop, 1000);
+        setInterval(rainPoop, 500);
+        updatePoopDisplay();
+    </script>
 </body>
 </html>
